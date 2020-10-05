@@ -13,6 +13,8 @@ PlayState = Class{__includes = BaseState}
 PIPE_SPEED = 60
 PIPE_WIDTH = 70
 PIPE_HEIGHT = 288
+PIPE_SPAWN_MIN = 1.8
+PIPE_SPAWN_MAX = 2.125
 
 BIRD_WIDTH = 38
 BIRD_HEIGHT = 24
@@ -22,17 +24,27 @@ function PlayState:init()
     self.pipePairs = {}
     self.timer = 0
     self.score = 0
+    self.nextPipe = math.random (PIPE_SPAWN_MIN / 3, PIPE_SPAWN_MAX / 3)
+    self.paused = false
 
     -- initialize our last recorded Y value for a gap placement to base other gaps off of
     self.lastY = -PIPE_HEIGHT + math.random(80) + 20
 end
 
 function PlayState:update(dt)
+    if love.keyboard.wasPressed ('escape') then
+        self.paused = not self.paused
+    end
+
+    if self.paused then
+        return
+    end
+
     -- update timer for pipe spawning
     self.timer = self.timer + dt
 
     -- spawn a new pipe pair every second and a half
-    if self.timer > 2 then
+    if self.timer > self.nextPipe then
         -- modify the last Y coordinate we placed so pipe gaps aren't too far apart
         -- no higher than 10 pixels below the top edge of the screen,
         -- and no lower than a gap length (90 pixels) from the bottom
@@ -45,6 +57,9 @@ function PlayState:update(dt)
 
         -- reset timer
         self.timer = 0
+
+        -- set next pipe spawn timer
+        self.nextPipe = math.random (PIPE_SPAWN_MIN, PIPE_SPAWN_MAX)
     end
 
     -- for every pair of pipes..
@@ -107,6 +122,11 @@ function PlayState:render()
     end
 
     love.graphics.setFont(flappyFont)
+
+    if self.paused then
+        love.graphics.print ('Press ESC to unpause', 8, 8 + 28)
+    end
+
     love.graphics.print('Score: ' .. tostring(self.score), 8, 8)
 
     self.bird:render()

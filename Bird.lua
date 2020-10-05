@@ -32,8 +32,8 @@ function Bird:collides(pipe)
     -- the 4's are right and bottom offsets
     -- both offsets are used to shrink the bounding box to give the player
     -- a little bit of leeway with the collision
-    if (self.x + 2) + (self.width - 4) >= pipe.x and self.x + 2 <= pipe.x + PIPE_WIDTH then
-        if (self.y + 2) + (self.height - 4) >= pipe.y and self.y + 2 <= pipe.y + PIPE_HEIGHT then
+    if (self.x + 2) + (self.width) >= pipe.x and self.x + 2 <= pipe.x + PIPE_WIDTH then
+        if (self.y + 2) + (self.height) >= pipe.y and self.y + 2 <= pipe.y + PIPE_HEIGHT then
             return true
         end
     end
@@ -54,5 +54,5 @@ function Bird:update(dt)
 end
 
 function Bird:render()
-    love.graphics.draw(self.image, self.x, self.y)
+    love.graphics.draw(self.image, self.x, self.y, (math.pi / 2) * (self.dy / GRAVITY), 1, 1, 19, 12)
 end

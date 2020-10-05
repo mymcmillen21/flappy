@@ -1,4 +1,11 @@
 --[[
+    done Read and understand all of the Flappy (Fifty!) Bird source code from Lecture 1.
+    done Influence the generation of pipes so as to bring about more complicated level generation.
+    done Give the player a medal for their performance, along with their score.
+    done Implement a pause feature, just in case life gets in the way of jumping through pipes!
+]]
+
+--[[
     GD50 2018
     Flappy Bird Remake
 
@@ -126,7 +133,7 @@ function love.keypressed(key)
     love.keyboard.keysPressed[key] = true
 
     if key == 'escape' then
-        love.event.quit()
+        -- love.event.quit() -- dont quit on escape. pause instead, which is handled by the playstate
     end
 end
 
@@ -157,7 +164,7 @@ function love.update(dt)
     -- scroll our background and ground, looping back to 0 after a certain amount
     backgroundScroll = (backgroundScroll + BACKGROUND_SCROLL_SPEED * dt) % BACKGROUND_LOOPING_POINT
     groundScroll = (groundScroll + GROUND_SCROLL_SPEED * dt) % VIRTUAL_WIDTH
-
+    
     gStateMachine:update(dt)
 
     love.keyboard.keysPressed = {}

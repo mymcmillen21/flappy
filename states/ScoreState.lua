@@ -34,4 +34,29 @@ function ScoreState:render()
     love.graphics.printf('Score: ' .. tostring(self.score), 0, 100, VIRTUAL_WIDTH, 'center')
 
     love.graphics.printf('Press Enter to Play Again!', 0, 160, VIRTUAL_WIDTH, 'center')
+
+    -- draw medal
+    local color = self.score >= 100 and {0.51, 0.96, 0.17} or -- emerald at 100
+        self.score >= 50 and {0.9, 0.1, 0, 1} or -- ruby at 50
+        self.score >= 25 and {0.8, 0.68, 0, 1} or -- gold at 25
+        self.score >= 15 and {0.5, 0.5, 0.5, 1} or -- silver at 15
+        self.score >= 5 and {0.65, 0.39, 0.12, 1} or -- bronze at 5
+        {1, 1, 1, 0.25} -- no medal below 5
+
+    love.graphics.setColor (color)
+    love.graphics.circle (self.score > 0 and "fill" or "line", VIRTUAL_WIDTH / 2, (VIRTUAL_HEIGHT / 2) - 8, 18, 32)
+    love.graphics.setColor (1, 1, 1, 1)
+    if self.score < 5 then
+        love.graphics.printf ('you are a failure', 0, (VIRTUAL_HEIGHT / 2), VIRTUAL_WIDTH, 'center')
+    elseif self.score < 15 then
+        love.graphics.printf ('bronze', 0, (VIRTUAL_HEIGHT / 2), VIRTUAL_WIDTH, 'center')
+    elseif self.score < 25 then
+        love.graphics.printf ('silver', 0, (VIRTUAL_HEIGHT / 2), VIRTUAL_WIDTH, 'center')
+    elseif self.score < 50 then
+        love.graphics.printf ('gold', 0, (VIRTUAL_HEIGHT / 2), VIRTUAL_WIDTH, 'center')
+    elseif self.score < 100 then
+        love.graphics.printf ('ruby', 0, (VIRTUAL_HEIGHT / 2), VIRTUAL_WIDTH, 'center')
+    else
+        love.graphics.printf ('emerald', 0, (VIRTUAL_HEIGHT / 2), VIRTUAL_WIDTH, 'center')
+    end
 end
