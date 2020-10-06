@@ -12,9 +12,9 @@ PipePair = Class{}
 
 -- size of the gap between pipes
 local GAP_HEIGHT_MIN = 128
-local GAP_HEIGHT_MAX = 192
+local GAP_HEIGHT_MAX = 150
 
-function PipePair:init(y)
+function PipePair:init(y, mover)
     self.gapHeight = math.random (GAP_HEIGHT_MIN, GAP_HEIGHT_MAX)
 
     -- flag to hold whether this pair has been scored (jumped through)
@@ -25,6 +25,10 @@ function PipePair:init(y)
 
     -- y value is for the topmost pipe; gap is a vertical shift of the second lower pipe
     self.y = y
+
+    self.mover = mover
+
+    self.moveDir = 1
 
     -- instantiate two pipes that belong to this pair
     self.pipes = {
@@ -37,6 +41,20 @@ function PipePair:init(y)
 end
 
 function PipePair:update(dt)
+    -- if this is a "mover", then move the pipe pair between the top and bottom of the screen
+    if self.mover then
+        self.pipes['upper'].y = self.pipes['upper'].y + (dt * PIPE_MOVER_SPEED * self.moveDir)
+        self.pipes['lower'].y = self.pipes['lower'].y + (dt * PIPE_MOVER_SPEED * self.moveDir)
+
+        if self.pipes['lower'].y > VIRTUAL_HEIGHT - 15 then -- when pipes at lower limit
+            self.moveDir = -1
+            self.pipes['lower'].y = VIRTUAL_HEIGHT - 15
+        elseif self.pipes['upper'].y < -PIPE_HEIGHT then -- when pipes at upper limit
+            self.moveDir = 1
+            self.pipes['upper'].y = -PIPE_HEIGHT
+        end
+    end
+
     -- remove the pipe from the scene if it's beyond the left edge of the screen,
     -- else move it from right to left
     if self.x > -PIPE_WIDTH then

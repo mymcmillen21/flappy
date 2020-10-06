@@ -10,7 +10,7 @@
 
 Bird = Class{}
 
-local GRAVITY = 20
+local GRAVITY = 2
 
 function Bird:init()
     self.image = love.graphics.newImage('bird.png')
@@ -28,16 +28,11 @@ end
     global pipe width and height values.
 ]]
 function Bird:collides(pipe)
-    -- the 2's are left and top offsets
-    -- the 4's are right and bottom offsets
-    -- both offsets are used to shrink the bounding box to give the player
-    -- a little bit of leeway with the collision
-    if (self.x + 2) + (self.width) >= pipe.x and self.x + 2 <= pipe.x + PIPE_WIDTH then
-        if (self.y + 2) + (self.height) >= pipe.y and self.y + 2 <= pipe.y + PIPE_HEIGHT then
+    if (self.x + 2 - (self.width / 2)) + (self.width) >= pipe.x and self.x + 0 <= pipe.x + PIPE_WIDTH then
+        if (self.y + 4 - (self.height / 2)) + (self.height) >= pipe.y and self.y - 10 <= pipe.y + PIPE_HEIGHT then
             return true
         end
     end
-
     return false
 end
 
@@ -46,7 +41,7 @@ function Bird:update(dt)
 
     -- burst of anti-gravity when space or left mouse are pressed
     if love.keyboard.wasPressed('space') or love.mouse.wasPressed(1) then
-        self.dy = -5
+        self.dy = -0.75
         sounds['jump']:play()
     end
 

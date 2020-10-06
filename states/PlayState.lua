@@ -10,11 +10,15 @@
 
 PlayState = Class{__includes = BaseState}
 
-PIPE_SPEED = 60
+PIPE_SPEED = 120
 PIPE_WIDTH = 70
 PIPE_HEIGHT = 288
-PIPE_SPAWN_MIN = 1.8
-PIPE_SPAWN_MAX = 2.125
+PIPE_HEIGHT_MIN = 270
+PIPE_HEIGHT_MAX = 290
+PIPE_SPAWN_MIN = 1.18
+PIPE_SPAWN_MAX = 1.32
+PIPE_MOVER_PER = 5
+PIPE_MOVER_SPEED = 24
 
 BIRD_WIDTH = 38
 BIRD_HEIGHT = 24
@@ -26,14 +30,17 @@ function PlayState:init()
     self.score = 0
     self.nextPipe = math.random (PIPE_SPAWN_MIN / 3, PIPE_SPAWN_MAX / 3)
     self.paused = false
+    self.nextMover = PIPE_MOVER_PER
+    -- LIKE I KNOW NIL IS A WORD BUT THIS IS LITERALLY THE ONLY LANGUAGE THAT USES IT
 
     -- initialize our last recorded Y value for a gap placement to base other gaps off of
-    self.lastY = -PIPE_HEIGHT + math.random(80) + 20
+    self.lastY = -math.random(PIPE_HEIGHT_MIN, PIPE_HEIGHT_MAX) + math.random(80) + 20
 end
 
 function PlayState:update(dt)
     if love.keyboard.wasPressed ('escape') then
         self.paused = not self.paused
+        scrolling = not self.paused
     end
 
     if self.paused then
@@ -45,15 +52,23 @@ function PlayState:update(dt)
 
     -- spawn a new pipe pair every second and a half
     if self.timer > self.nextPipe then
+        self.nextMover = self.nextMover - 1
+
         -- modify the last Y coordinate we placed so pipe gaps aren't too far apart
         -- no higher than 10 pixels below the top edge of the screen,
         -- and no lower than a gap length (90 pixels) from the bottom
-        local y = math.max(-PIPE_HEIGHT + 10, 
-            math.min(self.lastY + math.random(-20, 20), VIRTUAL_HEIGHT - 90 - PIPE_HEIGHT))
+        local pipeHeight = math.random (PIPE_HEIGHT_MIN, PIPE_HEIGHT_MAX)
+
+        local y = math.max(-pipeHeight + 10, 
+            math.min(self.lastY + math.random(-20, 20), VIRTUAL_HEIGHT - 90 - pipeHeight))
         self.lastY = y
 
         -- add a new pipe pair at the end of the screen at our new Y
-        table.insert(self.pipePairs, PipePair(y))
+        table.insert(self.pipePairs, PipePair(y, (self.nextMover <= 0)))
+
+        if self.nextMover <= 0 then
+            self.nextMover = PIPE_MOVER_PER
+        end
 
         -- reset timer
         self.timer = 0
